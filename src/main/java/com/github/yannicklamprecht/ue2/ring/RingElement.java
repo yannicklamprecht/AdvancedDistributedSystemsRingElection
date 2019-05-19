@@ -7,7 +7,7 @@ import com.github.yannicklamprecht.ue2.messenger.Messenger;
 /**
  * Created by ysl3000
  */
-public class RingElement extends Thread {
+public class RingElement implements Runnable {
 
     private final Messenger writer;
     private Messenger reader;
@@ -26,6 +26,10 @@ public class RingElement extends Thread {
 
     public Messenger getWriter() {
         return writer;
+    }
+
+    public int getId(){
+        return id;
     }
 
     @Override
