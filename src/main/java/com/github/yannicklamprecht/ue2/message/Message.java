@@ -1,7 +1,9 @@
 package com.github.yannicklamprecht.ue2.message;
 
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
 
     private final MessageType messageType;
     private int id;
@@ -23,4 +25,11 @@ public class Message {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "Message{" +
+        "messageType=" + messageType +
+        ", id=" + id +
+        '}';
+    }
 }

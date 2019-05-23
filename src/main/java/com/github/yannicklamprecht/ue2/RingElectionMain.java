@@ -1,13 +1,14 @@
 package com.github.yannicklamprecht.ue2;
 
-import com.github.yannicklamprecht.ue2.messenger.LocalBufferMessenger;
-import com.github.yannicklamprecht.ue2.messenger.Messenger;
+import com.github.yannicklamprecht.ue2.factory.RingElementFactory;
+import com.github.yannicklamprecht.ue2.factory.RingType;
+import com.github.yannicklamprecht.ue2.list.RingArrayList;
+import com.github.yannicklamprecht.ue2.list.RingList;
 import com.github.yannicklamprecht.ue2.ring.RingElement;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,47 +17,42 @@ import java.util.concurrent.TimeUnit;
 public class RingElectionMain {
 
     private final int size = 5;
-    List<RingElement> ringElements = new ArrayList<>();
+    RingList<RingElement> ringElements = new RingArrayList<>();
 
-    public RingElectionMain() {
+    public RingElectionMain() throws IOException {
+
+        RingElementFactory ringElementFactory = new RingElementFactory();
 
         for (int i = 0; i < size; i++) {
-            Messenger messenger = new LocalBufferMessenger();
-            RingElement ringElement = new RingElement(i, messenger);
-            ringElements.add(ringElement);
+            ringElements.add(ringElementFactory.create(i, RingType.NETWORK));
         }
 
-        int rand = ThreadLocalRandom.current().nextInt(ringElements.size());
-
-        ringElements.get(rand).beginElection();
-
-        for (int i = 0; i < ringElements.size(); i++) {
-            RingElement current = ringElements.get(i);
-            RingElement next = ringElements.get((i + 1) % ringElements.size());
-            current.setReader(next.getWriter());
-        }
+        ringElements.forEach((RingElement::connectNextRingElement));
+        ringElements.pickRandomOne().beginElection();
 
         try {
-            executeParalell(ringElements);
+            executeParallel(ringElements);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        ringElements.forEach( ringElement -> {
-            System.out.println("RingElement: "+ringElement.getId()+ " PrticipationStatus: "+ ringElement.getParticipation()+ " electedId "+ ringElement.getElectedID());
-        });
+        ringElements.forEach(RingElement::print);
 
     }
 
     public static void main(String[] args) {
-        new RingElectionMain();
+        try {
+            new RingElectionMain();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void executeParalell(List<? extends Runnable> runnables) throws InterruptedException {
+    private void executeParallel(List<? extends Runnable> runnables) throws InterruptedException {
         ExecutorService es = Executors.newCachedThreadPool();
         runnables.forEach(es::execute);
         es.shutdown();
-
-        boolean finished = es.awaitTermination(1, TimeUnit.MINUTES);
+        es.awaitTermination(1, TimeUnit.MINUTES);
     }
+
 }
