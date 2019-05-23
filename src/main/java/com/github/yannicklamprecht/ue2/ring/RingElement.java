@@ -25,9 +25,7 @@ public abstract class RingElement<T extends Settable<T>> implements Runnable {
     }
 
     public void connectToNextMessenger(T networkConfiguration) {
-        this.getMessenger().getConfigurator().ifPresent(current -> {
-            current.setNext(networkConfiguration);
-        });
+        this.getMessenger().getConfigurator().ifPresent(current -> current.setNext(networkConfiguration));
     }
 
     public int getId() {

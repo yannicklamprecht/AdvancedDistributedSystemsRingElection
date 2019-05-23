@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 public class RingElementFactory {
 
     public RingElement create(int id, RingType type){
+
         switch (type){
             case NETWORK:
                 try {

@@ -13,4 +13,8 @@ public interface RingList<T> extends List<T> {
     void forEach(DoubleConsumer<T> consumer);
 
     T pickRandomOne();
+
+    static <T> RingList<T> create(){
+        return new RingArrayList<>();
+    }
 }
