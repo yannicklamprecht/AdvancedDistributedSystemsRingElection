@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 public class LocalConfiguration implements Configuration<LocalConfiguration, Message> {
 
-    private Message current;
+    private volatile Message message;
     private LocalConfiguration next;
 
     public LocalConfiguration(int id) throws IOException {
@@ -21,9 +21,9 @@ public class LocalConfiguration implements Configuration<LocalConfiguration, Mes
 
     @Override
     public Message read() {
-        if (current != null) {
-            Message temp = new Message(current.getMessageType(), current.getId());
-            this.current = null;
+        if (message != null) {
+            Message temp = message;
+            this.message = null;
             return temp;
         }
         return null;
@@ -31,6 +31,6 @@ public class LocalConfiguration implements Configuration<LocalConfiguration, Mes
 
     @Override
     public void write(Message message) {
-        this.next.current=message;
+        this.next.message = message;
     }
 }

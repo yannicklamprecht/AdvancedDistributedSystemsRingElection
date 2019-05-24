@@ -4,7 +4,6 @@ import com.github.yannicklamprecht.ue2.messenger.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -46,18 +45,10 @@ public class NetworkConfiguration implements Configuration<NetworkConfiguration,
         }
     }
 
-    public InetAddress getAddress() {
-        return in.getInetAddress();
-    }
-
-    public int getPort() {
-        return in.getLocalPort();
-    }
-
     @Override
     public void setNext(NetworkConfiguration next) {
         try {
-            this.out = new Socket(next.getAddress(), next.getPort());
+            this.out = new Socket(next.in.getInetAddress(), next.in.getLocalPort());
         } catch (IOException e) {
             e.printStackTrace();
         }

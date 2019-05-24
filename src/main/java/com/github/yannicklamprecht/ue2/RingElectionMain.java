@@ -3,7 +3,7 @@ package com.github.yannicklamprecht.ue2;
 import com.github.yannicklamprecht.ue2.messenger.Message;
 import com.github.yannicklamprecht.ue2.messenger.RingElement;
 import com.github.yannicklamprecht.ue2.messenger.configuration.Configuration;
-import com.github.yannicklamprecht.ue2.messenger.configuration.NetworkConfiguration;
+import com.github.yannicklamprecht.ue2.messenger.configuration.LocalConfiguration;
 import com.github.yannicklamprecht.ue2.util.RingList;
 import com.github.yannicklamprecht.ue2.util.ThrowableFunction;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class RingElectionMain<T extends Configuration<T, Message>> {
     public static void main(String[] args) {
         int size = 5;
 
-        new RingElectionMain<>(NetworkConfiguration::new, size);
+        new RingElectionMain<>(LocalConfiguration::new, size);
     }
 
     private void executeParallel(RingList<? extends Runnable> runnables) throws InterruptedException {
