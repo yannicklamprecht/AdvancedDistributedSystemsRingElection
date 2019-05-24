@@ -11,5 +11,5 @@ public interface Configuration<T, M>{
 
     void write(M object);
 
-    boolean init();
+    default void init(){}
 }

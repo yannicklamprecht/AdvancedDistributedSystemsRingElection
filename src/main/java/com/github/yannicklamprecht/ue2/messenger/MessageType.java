@@ -1,4 +1,4 @@
-package com.github.yannicklamprecht.ue2.message;
+package com.github.yannicklamprecht.ue2.messenger;
 
 import java.io.Serializable;
 

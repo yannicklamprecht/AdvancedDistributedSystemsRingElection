@@ -1,9 +1,12 @@
 package com.github.yannicklamprecht.ue2;
 
-import com.github.yannicklamprecht.ue2.factory.RingElementFactory;
-import com.github.yannicklamprecht.ue2.factory.RingType;
-import com.github.yannicklamprecht.ue2.list.RingList;
+import com.github.yannicklamprecht.ue2.messenger.Message;
 import com.github.yannicklamprecht.ue2.messenger.RingElement;
+import com.github.yannicklamprecht.ue2.messenger.configuration.Configuration;
+import com.github.yannicklamprecht.ue2.messenger.configuration.NetworkConfiguration;
+import com.github.yannicklamprecht.ue2.util.RingList;
+import com.github.yannicklamprecht.ue2.util.ThrowableFunction;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -12,16 +15,19 @@ import java.util.stream.IntStream;
 /**
  * Created by ysl3000
  */
-public class RingElectionMain {
+public class RingElectionMain<T extends Configuration<T, Message>> {
 
-    private final int SIZE = 5;
-    private RingList<RingElement> ringElements = RingList.create();
+    private RingList<RingElement<T>> ringElements = RingList.create();
 
-    private RingElectionMain() {
+    private RingElectionMain(ThrowableFunction<Integer,T, IOException> ringType, int size) {
 
-        RingElementFactory ringElementFactory = new RingElementFactory();
-
-        IntStream.range(0,SIZE).forEachOrdered(i -> ringElements.add(ringElementFactory.create(i, RingType.NETWORK)));
+        IntStream.range(0, size).forEachOrdered(i -> {
+            try {
+                ringElements.add(new RingElement<>(i,ringType.provide(i)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         ringElements.forEach(RingElement::connectNextRingElement);
         ringElements.pickRandomOne().beginElection();
@@ -34,15 +40,17 @@ public class RingElectionMain {
         ringElements.forEach(RingElement::print);
     }
 
+    public static void main(String[] args) {
+        int size = 5;
+
+        new RingElectionMain<>(NetworkConfiguration::new, size);
+    }
+
     private void executeParallel(RingList<? extends Runnable> runnables) throws InterruptedException {
         ExecutorService es = Executors.newCachedThreadPool();
         runnables.forEach(es::execute);
         es.shutdown();
         es.awaitTermination(1, TimeUnit.MINUTES);
-    }
-
-    public static void main(String[] args) {
-        new RingElectionMain();
     }
 
 }

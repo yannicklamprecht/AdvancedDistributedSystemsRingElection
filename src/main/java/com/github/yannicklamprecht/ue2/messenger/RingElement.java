@@ -1,31 +1,30 @@
 package com.github.yannicklamprecht.ue2.messenger;
 
-import com.github.yannicklamprecht.ue2.message.Message;
-import com.github.yannicklamprecht.ue2.message.MessageType;
 import com.github.yannicklamprecht.ue2.messenger.configuration.Configuration;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Created by ysl3000
  */
-public class RingElement<T extends Configuration<T,Message>> implements Runnable {
+public class RingElement<T extends Configuration<T, Message>> implements Runnable {
 
     private final T messenger;
     private Participation participation = Participation.NONE;
     private int id;
     private Integer electedID;
 
+    private Map<MessageType, Consumer<Message>> action = Map.of(MessageType.ELECTED, this::onElectedMessage, MessageType.ELECTION, this::onElectionMessage);
+
     public RingElement(int id, T messenger) {
         this.id = id;
         this.messenger = messenger;
     }
 
-    public void connectToNextMessenger(T networkConfiguration) {
-        this.messenger.setNext(networkConfiguration);
+    public void connectNextRingElement(RingElement<T> ringElement) {
+        this.messenger.setNext(ringElement.messenger);
     }
 
-    public int getId() {
-        return id;
-    }
 
     @Override
     public void run() {
@@ -37,20 +36,8 @@ public class RingElement<T extends Configuration<T,Message>> implements Runnable
                 continue;
             }
             System.out.println(message);
-
-            switch (message.getMessageType()) {
-                case ELECTED:
-                    onElectedMessage(message);
-                    break;
-                case ELECTION:
-                    onElectionMessage(message);
-                    break;
-            }
+            action.get(message.getMessageType()).accept(message);
         }
-    }
-
-    public Integer getElectedID() {
-        return electedID;
     }
 
     private void onElectedMessage(Message message) {
@@ -89,15 +76,6 @@ public class RingElement<T extends Configuration<T,Message>> implements Runnable
     }
 
 
-    public Participation getParticipation() {
-        return participation;
-    }
-
-
-    public void connectNextRingElement(RingElement<T> ringElement) {
-        this.connectToNextMessenger(ringElement.messenger);
-    }
-
     @Override
     public String toString() {
         return "RingElement{" +
@@ -109,7 +87,7 @@ public class RingElement<T extends Configuration<T,Message>> implements Runnable
     }
 
     public void print() {
-        System.out.println("RingElement: " + getId() + " ParticipationStatus: " + getParticipation() + " electedId " + getElectedID());
+        System.out.println("RingElement: " + id + " ParticipationStatus: " + participation + " electedId " + electedID);
     }
 
 }

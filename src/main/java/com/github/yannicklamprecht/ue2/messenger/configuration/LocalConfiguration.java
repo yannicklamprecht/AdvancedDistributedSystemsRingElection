@@ -1,7 +1,7 @@
-package com.github.yannicklamprecht.ue2.messenger.configuration.local;
+package com.github.yannicklamprecht.ue2.messenger.configuration;
 
-import com.github.yannicklamprecht.ue2.message.Message;
-import com.github.yannicklamprecht.ue2.messenger.configuration.Configuration;
+import com.github.yannicklamprecht.ue2.messenger.Message;
+import java.io.IOException;
 
 /**
  * Created by ysl3000
@@ -11,14 +11,12 @@ public class LocalConfiguration implements Configuration<LocalConfiguration, Mes
     private Message current;
     private LocalConfiguration next;
 
-    @Override
-    public void setNext(LocalConfiguration next) {
-        this.next = next;
+    public LocalConfiguration(int id) throws IOException {
     }
 
     @Override
-    public boolean init() {
-        return true;
+    public void setNext(LocalConfiguration next) {
+        this.next = next;
     }
 
     @Override

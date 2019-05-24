@@ -1,4 +1,4 @@
-package com.github.yannicklamprecht.ue2.list;
+package com.github.yannicklamprecht.ue2.util;
 
 import java.util.List;
 

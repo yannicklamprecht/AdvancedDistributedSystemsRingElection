@@ -1,7 +1,6 @@
-package com.github.yannicklamprecht.ue2.messenger.configuration.network;
+package com.github.yannicklamprecht.ue2.messenger.configuration;
 
-import com.github.yannicklamprecht.ue2.message.Message;
-import com.github.yannicklamprecht.ue2.messenger.configuration.Configuration;
+import com.github.yannicklamprecht.ue2.messenger.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -20,8 +19,8 @@ public class NetworkConfiguration implements Configuration<NetworkConfiguration,
     private ObjectOutputStream objectOutputStream;
 
 
-    public NetworkConfiguration(ServerSocket in) {
-        this.in = in;
+    public NetworkConfiguration(int id) throws IOException {
+        this.in = new ServerSocket(2000 + id);
     }
 
     public Message read() {
@@ -38,9 +37,7 @@ public class NetworkConfiguration implements Configuration<NetworkConfiguration,
     public void write(Message message) {
         try {
             if (objectOutputStream == null && out != null) {
-
                 this.objectOutputStream = new ObjectOutputStream(out.getOutputStream());
-
             }
 
             objectOutputStream.writeObject(message);
@@ -76,17 +73,15 @@ public class NetworkConfiguration implements Configuration<NetworkConfiguration,
         '}';
     }
 
-    public boolean init() {
+    public void init() {
         if (objectInputStream == null) {
 
             try {
                 Socket socket = in.accept();
                 this.objectInputStream = new ObjectInputStream(socket.getInputStream());
-                return true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return false;
     }
 }

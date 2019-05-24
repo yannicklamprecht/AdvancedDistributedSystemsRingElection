@@ -1,4 +1,4 @@
-package com.github.yannicklamprecht.ue2.list;
+package com.github.yannicklamprecht.ue2.util;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,9 +11,7 @@ public class RingArrayList<T> extends ArrayList<T> implements RingList<T> {
     @Override
     public void forEach(DoubleConsumer<T> consumer) {
         for (int i = 0; i < size(); i++) {
-            T current = get(i);
-            T next = get((i + 1) % size());
-            consumer.consume(current, next);
+            consumer.consume(get(i), get((i + 1) % size()));
         }
     }
 
