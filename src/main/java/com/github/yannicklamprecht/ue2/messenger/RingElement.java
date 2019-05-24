@@ -1,31 +1,26 @@
-package com.github.yannicklamprecht.ue2.ring;
+package com.github.yannicklamprecht.ue2.messenger;
 
 import com.github.yannicklamprecht.ue2.message.Message;
 import com.github.yannicklamprecht.ue2.message.MessageType;
-import com.github.yannicklamprecht.ue2.messenger.Messenger;
-import com.github.yannicklamprecht.ue2.messenger.Settable;
+import com.github.yannicklamprecht.ue2.messenger.configuration.Configuration;
 
 /**
  * Created by ysl3000
  */
-public abstract class RingElement<T extends Settable<T>> implements Runnable {
+public class RingElement<T extends Configuration<T,Message>> implements Runnable {
 
-    private final Messenger<T, Message> messenger;
+    private final T messenger;
     private Participation participation = Participation.NONE;
     private int id;
     private Integer electedID;
 
-    public RingElement(int id, Messenger<T, Message> messenger) {
+    public RingElement(int id, T messenger) {
         this.id = id;
         this.messenger = messenger;
     }
 
-    public Messenger<T, Message> getMessenger() {
-        return messenger;
-    }
-
     public void connectToNextMessenger(T networkConfiguration) {
-        this.getMessenger().getConfigurator().ifPresent(current -> current.setNext(networkConfiguration));
+        this.messenger.setNext(networkConfiguration);
     }
 
     public int getId() {
@@ -99,7 +94,9 @@ public abstract class RingElement<T extends Settable<T>> implements Runnable {
     }
 
 
-    public abstract void connectNextRingElement(RingElement<T> ringElement);
+    public void connectNextRingElement(RingElement<T> ringElement) {
+        this.connectToNextMessenger(ringElement.messenger);
+    }
 
     @Override
     public String toString() {
@@ -111,7 +108,7 @@ public abstract class RingElement<T extends Settable<T>> implements Runnable {
         '}';
     }
 
-    public void print(){
+    public void print() {
         System.out.println("RingElement: " + getId() + " ParticipationStatus: " + getParticipation() + " electedId " + getElectedID());
     }
 

@@ -3,7 +3,7 @@ package com.github.yannicklamprecht.ue2;
 import com.github.yannicklamprecht.ue2.factory.RingElementFactory;
 import com.github.yannicklamprecht.ue2.factory.RingType;
 import com.github.yannicklamprecht.ue2.list.RingList;
-import com.github.yannicklamprecht.ue2.ring.RingElement;
+import com.github.yannicklamprecht.ue2.messenger.RingElement;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;

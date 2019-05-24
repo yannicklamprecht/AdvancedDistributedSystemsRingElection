@@ -1,19 +1,18 @@
-package com.github.yannicklamprecht.ue2.messenger.network;
+package com.github.yannicklamprecht.ue2.messenger.configuration.network;
 
-import com.github.yannicklamprecht.ue2.messenger.Initable;
-import com.github.yannicklamprecht.ue2.messenger.Settable;
+import com.github.yannicklamprecht.ue2.message.Message;
+import com.github.yannicklamprecht.ue2.messenger.configuration.Configuration;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Optional;
 
 /**
  * Created by ysl3000
  */
-public class NetworkConfiguration implements Settable<NetworkConfiguration>, Initable {
+public class NetworkConfiguration implements Configuration<NetworkConfiguration, Message> {
 
     private Socket out;
     private ServerSocket in;
@@ -25,22 +24,29 @@ public class NetworkConfiguration implements Settable<NetworkConfiguration>, Ini
         this.in = in;
     }
 
-    public ObjectInputStream getIn() {
-        return objectInputStream;
+    public Message read() {
+        try {
+            return (Message) objectInputStream.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    public Optional<ObjectOutputStream> getOut() {
+    public void write(Message message) {
+        try {
+            if (objectOutputStream == null && out != null) {
 
-        if (objectOutputStream == null && out!= null) {
-
-            try {
                 this.objectOutputStream = new ObjectOutputStream(out.getOutputStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
-        return Optional.ofNullable(objectOutputStream);
+            }
+
+            objectOutputStream.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public InetAddress getAddress() {
@@ -70,7 +76,7 @@ public class NetworkConfiguration implements Settable<NetworkConfiguration>, Ini
         '}';
     }
 
-    public boolean init(){
+    public boolean init() {
         if (objectInputStream == null) {
 
             try {
