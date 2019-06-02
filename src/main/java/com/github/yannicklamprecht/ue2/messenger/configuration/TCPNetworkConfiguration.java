@@ -10,7 +10,7 @@ import java.net.Socket;
 /**
  * Created by ysl3000
  */
-public class NetworkConfiguration implements Configuration<NetworkConfiguration, Message> {
+public class TCPNetworkConfiguration implements Configuration<TCPNetworkConfiguration, Message> {
 
     private Socket out;
     private ServerSocket in;
@@ -18,7 +18,7 @@ public class NetworkConfiguration implements Configuration<NetworkConfiguration,
     private ObjectOutputStream objectOutputStream;
 
 
-    public NetworkConfiguration(int id) throws IOException {
+    public TCPNetworkConfiguration(int id) throws IOException {
         this.in = new ServerSocket(2000 + id);
     }
 
@@ -46,7 +46,7 @@ public class NetworkConfiguration implements Configuration<NetworkConfiguration,
     }
 
     @Override
-    public void setNext(NetworkConfiguration next) {
+    public void setNext(TCPNetworkConfiguration next) {
         try {
             this.out = new Socket(next.in.getInetAddress(), next.in.getLocalPort());
         } catch (IOException e) {
